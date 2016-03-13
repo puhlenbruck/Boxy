@@ -1,10 +1,7 @@
 package com.puhlen.boxy;
 
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.SurfaceHolder;
-
-import com.puhlen.boxy.GamePanel;
 
 /**
  * Created by claire on 03/11/15.
@@ -70,10 +67,8 @@ public class MainThread extends Thread {
             frameCount++;
             if(frameCount == FPS)
             {
-                averageFPS = 1000f/(((float)totalTime/(float)frameCount)/1000000f);
                 frameCount = 0;
                 totalTime = 0;
-                Log.v(this.toString(), Double.toString(averageFPS));
             }
         }
     }

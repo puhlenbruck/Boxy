@@ -11,11 +11,11 @@ import java.util.Random;
 /**
  * Created by claire on 05/11/15.
  */
-public final class Obstacle extends GameObject {
+public final class Clicker extends GameObject {
     private final Rect r;
     private final Paint paint = new Paint();
 
-    public Obstacle(int x, int y, int size) {
+    public Clicker(int x, int y, int size) {
         this.x = x;
         this.y = y;
         this.width = size;
@@ -28,7 +28,7 @@ public final class Obstacle extends GameObject {
         canvas.drawRect(r, paint);
     }
 
-    public static Obstacle randomObstacle(Context context, int size) {
+    public static Clicker randomObstacle(Context context, int size) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         int scrWidth = metrics.widthPixels;
         int scrHeight = metrics.heightPixels;
@@ -38,7 +38,7 @@ public final class Obstacle extends GameObject {
         int x = r.nextInt(scrWidth - size);
         int y = r.nextInt((scrHeight - size) - 100) + 100;
 
-        return new Obstacle(x, y, size);
+        return new Clicker(x, y, size);
     }
 
     public void update() {
@@ -49,6 +49,10 @@ public final class Obstacle extends GameObject {
 
     public int centreY(){
         return r.centerY();
+    }
+
+    public boolean contains(int x, int y){
+        return r.contains(x,y);
     }
 
     public int getSize() {

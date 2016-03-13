@@ -1,28 +1,32 @@
 package com.puhlen.boxy;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-
-import com.puhlen.boxy.GamePanel;
-import com.puhlen.boxy.R;
+import android.view.View;
+import android.widget.TextView;
 
 public class Game extends Activity {
+
+    TextView start;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //remove Title
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_menu);
 
-        //Set Fullscreen
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        start = (TextView) findViewById(R.id.btnStart);
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent playIntent = new Intent(Game.this, GamePanelActivity.class);
+                startActivity(playIntent);
+            }
+        });
 
-        setContentView(new GamePanel(this));
     }
 
     @Override
@@ -46,4 +50,5 @@ public class Game extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
