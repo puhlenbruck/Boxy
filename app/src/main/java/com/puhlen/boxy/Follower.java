@@ -24,7 +24,7 @@ import android.graphics.Rect;
  * Created by claire on 05/11/15.
  */
 public class Follower extends GameObject {
-    private static final int sideLength = 50;
+    private static int sideLength = 50;
 
     private Rect sprite;
 

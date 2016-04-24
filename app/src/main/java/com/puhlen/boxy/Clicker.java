@@ -21,15 +21,18 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import java.util.Random;
 
-/**
- * Created by claire on 05/11/15.
- */
+
 public final class Clicker extends GameObject {
+
+
+    private static final Random random = new Random();
     private final Rect r;
     private final Paint paint = new Paint();
+
 
     public Clicker(int x, int y, int size) {
         this.x = x;
@@ -38,6 +41,7 @@ public final class Clicker extends GameObject {
         this.height = size;
         r = new Rect(x, y, x + size, y + size);
         paint.setARGB(255, 255, 0, 0);
+        Log.d(this.toString(), "size = " + size);
     }
 
     public void draw(Canvas canvas) {
@@ -49,29 +53,37 @@ public final class Clicker extends GameObject {
         int scrWidth = metrics.widthPixels;
         int scrHeight = metrics.heightPixels;
 
-        Random r = new Random();
 
-        int x = r.nextInt(scrWidth - size);
-        int y = r.nextInt((scrHeight - size) - 100) + 100;
+        int x = random.nextInt(scrWidth - size);
+        int y = random.nextInt((scrHeight - size) - 100) + 100;
 
         return new Clicker(x, y, size);
     }
 
     public void update() {
     }
-    public int centreX(){
+
+    public int centreX() {
         return r.centerX();
     }
 
-    public int centreY(){
+    public int centreY() {
         return r.centerY();
     }
 
-    public boolean contains(int x, int y){
-        return r.contains(x,y);
+    public boolean contains(int x, int y) {
+        return r.contains(x, y);
     }
 
     public int getSize() {
         return height;
+    }
+
+    @Override
+    public String toString() {
+        return "Clicker{" +
+                "r=" + r +
+                ", paint=" + paint +
+                '}';
     }
 }

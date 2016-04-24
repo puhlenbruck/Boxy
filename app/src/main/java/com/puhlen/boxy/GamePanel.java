@@ -27,7 +27,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,9 +36,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread mainThread;
     private Activity game;
     private static List<Rect> bounds = new ArrayList<>(4);
-    private List<GameObject> enemies = new LinkedList<>();
-    private List<Clicker> clickers = new LinkedList<>();
+    private List<GameObject> enemies = new ArrayList<>();
+    private List<Clicker> clickers = new ArrayList<>();
     private int numClickers = 1;
+    private int width;
+    private int height;
 
     public GamePanel(Activity game) {
         super(game);
@@ -51,10 +52,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         setFocusable(true);
         DisplayMetrics metrics = game.getResources().getDisplayMetrics();
-        bounds.add(new Rect(0, 0, -1, metrics.heightPixels));
-        bounds.add(new Rect(0, 0, metrics.widthPixels, -1));
-        bounds.add(new Rect(metrics.widthPixels, 0, metrics.widthPixels + 1, metrics.heightPixels));
-        bounds.add(new Rect(0, metrics.heightPixels, metrics.widthPixels, metrics.heightPixels + 1));
+        width = metrics.widthPixels;
+        height = metrics.heightPixels;
+        bounds.add(new Rect(0, 0, -1, height));
+        bounds.add(new Rect(0, 0, width, -1));
+        bounds.add(new Rect(width, 0, width + 1, height));
+        bounds.add(new Rect(0, height, width, height));
+
+        ScoreLabel.getScoreLabel().score = 0;
 
     }
 
@@ -89,7 +94,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         if (clickers.isEmpty()) {
             for (int i = 0; i < numClickers; i++) {
-                clickers.add(Clicker.randomObstacle(getContext(), 100));
+
+                Clicker clicker;
+                do {
+                    clicker = Clicker.randomObstacle(getContext(), width / 10);
+                } while (isWithinProximity(clicker, 100));
+                clickers.add(clicker);
             }
             for (GameObject ob : enemies) {
                 if (ob instanceof Follower) {
@@ -105,10 +115,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         checkForLoss();
     }
 
+    private boolean isWithinProximity(Clicker clicker, int safeDistance) {
+        final int distFromCentre = (clicker.getSize() / 2) + safeDistance;
+        Rect safeZone = new Rect(clicker.centreX() - distFromCentre, clicker.centreY() -
+                distFromCentre, clicker.centreX() + distFromCentre, clicker.centreY() +
+                distFromCentre);
+        for (GameObject o : enemies) {
+            if (Rect.intersects(safeZone, o.getBoundingBox())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void checkForLoss() {
-        for (Clicker c:clickers) {
-            for(GameObject enemy: enemies){
-                if(c.getBoundingBox().intersect(enemy.getBoundingBox())){
+        for (Clicker c : clickers) {
+            for (GameObject enemy : enemies) {
+                if (c.getBoundingBox().intersect(enemy.getBoundingBox())) {
                     lose();
                 }
             }
@@ -118,7 +141,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private void lose() {
         mainThread.setRunning(false);
         Intent scoreScreen = new Intent(game, ScoreActivity.class);
-        scoreScreen.putExtra("score",ScoreLabel.getScoreLabel().score);
+        scoreScreen.putExtra("score", ScoreLabel.getScoreLabel().score);
         game.startActivity(scoreScreen);
         game.finish();
     }
@@ -159,18 +182,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
 
-    private void scorePoint(){
+    private void scorePoint() {
         final int score = ++ScoreLabel.getScoreLabel().score;
-        if(score%20==0){
+        if (score % 20 == 0) {
             enemies.add(new Bouncer(this.getContext()));
         }
-        if(score%50==0){
+        if (score % 50 == 0) {
             numClickers++;
-            enemies.add(new Follower(score/50));
+            enemies.add(new Follower(score / 50));
         }
     }
 
-    public static List<Rect> getBounds(){
+    public static List<Rect> getBounds() {
         return bounds;
     }
 }
